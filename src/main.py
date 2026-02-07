@@ -1,10 +1,10 @@
 import asyncio
-from agents.research_intelligence import ResearchIntelligence
+from agents.research_intelligence import ResearchIntelligenceAgent
 
 async def main():
     """Main function to run agents"""
     try:
-        research_agent = ResearchIntelligence()
+        research_agent = ResearchIntelligenceAgent()
 
         print("Research Intelligence Agent")
         print("Type 'exit' to quit")
