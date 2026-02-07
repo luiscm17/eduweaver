@@ -1,12 +1,12 @@
 from .base_agent import BaseAgent
 
-class ResearchIntelligence(BaseAgent):
+class ResearchIntelligenceAgent(BaseAgent):
     """
     Research Intelligence Agent
     """
     def get_agent(self):
         return self._create_agent(
-            name="ResearchIntelligence",
+            name="ResearchIntelligenceAgent",
             instructions="You are a research intelligence agent. You help users with their research needs.",
             tools=[]
         )
