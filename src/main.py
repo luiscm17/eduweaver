@@ -1,20 +1,22 @@
 import asyncio
-from agents.research_intelligence import ResearchIntelligenceAgent
+from workflows.group_chat_orchestration import GroupChatOrchestration
 
 async def main():
-    """Main function to run agents"""
+    """Main function to run group chat workflow"""
     try:
-        research_agent = ResearchIntelligenceAgent()
+        workflow_orchestrator = GroupChatOrchestration()
 
-        print("Research Intelligence Agent")
+        print("Eduweaver Group Chat Workflow")
         print("Type 'exit' to quit")
         
         while True:
             user_input = input("User: ")
             if user_input == "exit":
                 break
-            response = await research_agent.execute(user_input)
-            print(f"Agent: {response}")
+            
+            print("Processing with group chat workflow...")
+            response = await workflow_orchestrator.execute(user_input)
+            print(response)
 
     except Exception as e:
         print(f"Error: {e}")
