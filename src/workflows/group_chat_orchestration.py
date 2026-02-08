@@ -1,62 +1,61 @@
-from agent_framework import GroupChatBuilder, AgentRunUpdateEvent, WorkflowOutputEvent, Role
+import asyncio
+from agent_framework import GroupChatBuilder, Role, ChatMessage, WorkflowOutputEvent, Content
 
 from agents.content_generation import ContentGenerationAgent
 from agents.research_intelligence import ResearchIntelligenceAgent
-from agents.base_agent import BaseAgent
+from agents.orchestrator_agent import OrchestratorAgent
 
-class GroupChatOrchestration(BaseAgent):
+class GroupChatOrchestration:
     """
-    Group Chat Orchestration
+    Group Chat Orchestration - Workflow Manager
     """
-    def get_agent(self):
-        return self._create_agent(
-            name="GroupChatOrchestration",
-            instructions="You are a group chat orchestration agent. You help users with your group chat orchestration needs.",
-            tools=[]
-        )
-
-    def create_workflow(self):
-        research_agent = ResearchIntelligenceAgent()
-        content_agent = ContentGenerationAgent()
-        orchestrator_agent = self.get_agent()
-        
+    
+    def __init__(self):
+        """Initialize workflow manager with participant agents"""
+        self.research_agent = ResearchIntelligenceAgent()
+        self.content_agent = ContentGenerationAgent()
+        self.orchestrator_agent = OrchestratorAgent()
+    
+    def _build_workflow(self):
+        """Build the group chat workflow"""
         return (
             GroupChatBuilder()
-            .with_orchestrator(agent=orchestrator_agent)
-            .with_termination_condition(lambda messages: sum(1 for msg in messages if msg.role == Role.ASSISTANT) >= 4)
+            .with_orchestrator(agent=self.orchestrator_agent.get_agent())
+            .with_termination_condition(lambda messages: sum(1 for msg in messages if msg.role == Role.ASSISTANT) >= 6)
             .participants([
-                research_agent.get_agent(),
-                content_agent.get_agent()
+                self.research_agent.get_agent(),
+                self.content_agent.get_agent()
             ])
             .build()
         )
     
     async def execute(self, topic: str):
-        """Execute the group chat workflow"""
-        workflow = self.create_workflow()
-        response = ""
+        """Execute group chat workflow"""
+        # Build workflow
+        workflow = self._build_workflow()
+        
+        # Convert workflow to agent for thread management
+        workflow_agent = workflow.as_agent(name="MultiAgentChat")
+        
+        # Create thread
+        thread = workflow_agent.get_new_thread()
+        
+        # Execute workflow agent with thread
+        messages = [ChatMessage(role=Role.USER, contents=[Content.from_text(topic)])]
         
         try:
-            async for event in workflow.run_stream(topic):
-                if isinstance(event, AgentRunUpdateEvent):
-                    # Process AgentRunUpdateEvent - contains partial messages
-                    if hasattr(event, 'messages') and event.messages:
-                        for msg in event.messages:
-                            text = getattr(msg, 'text', '')
-                            if text:
-                                response += f"agent: {text}\n"
-                                print(f"agent: {text}")
-                elif isinstance(event, WorkflowOutputEvent):
-                    # Workflow completed - final conversation
-                    for msg in event.data:
-                        text = getattr(msg, 'text', str(msg))
-                        if text.strip():
-                            response += f"agent: {text}\n"
-                            print(f"agent: {text}")
-        
+            full_response = ""
+            async for update in workflow_agent.run_stream(messages, thread=thread):
+                if update.text:
+                    print(update.text, end="", flush=True)
+                    full_response += update.text
+            if full_response:
+                print("\n" + "="*50)
+                print("ARTICLE COMPLETE:")
+                print(full_response)
+                print("="*50)
+                return full_response
         except asyncio.CancelledError:
             print("\nChat cancelled by user.")
         except Exception as e:
             print(f"\nError processing chat: {e}")
-        
-        return response
