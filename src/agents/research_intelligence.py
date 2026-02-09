@@ -1,6 +1,7 @@
 from agent_framework import HostedWebSearchTool
 from agent_framework.azure import AzureAIProjectAgentProvider
 from azure.identity.aio import AzureCliCredential
+from tools.web_search_properties import get_academic_search_properties
 
 class ResearchIntelligenceAgent:
     """
@@ -16,6 +17,9 @@ class ResearchIntelligenceAgent:
     async def get_agent(self):
         """Get or create the agent with web search capabilities"""
         if self.agent is None:
+            # Usar propiedades académicas modularizadas
+            search_properties = get_academic_search_properties()
+            
             self.agent = await self.provider.create_agent(
                 name="ResearchIntelligenceAgent",
                 instructions="""You are a research intelligence agent specializing in technology and science topics.
@@ -42,7 +46,7 @@ class ResearchIntelligenceAgent:
                 - Provide up-to-date information on technology topics
                 - Include recent developments and trends in your research
                 """,
-                tools=[HostedWebSearchTool()]
+                tools=[HostedWebSearchTool(additional_properties=search_properties)]
             )
         return self.agent
     
