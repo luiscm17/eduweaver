@@ -50,17 +50,17 @@ class GroupChatOrchestration:
         messages = [ChatMessage(role=Role.USER, contents=[Content.from_text(topic)])]
         
         try:
-            full_response = ""
-            async for update in workflow_agent.run_stream(messages, thread=thread):
-                if update.text:
-                    print(update.text, end="", flush=True)
-                    full_response += update.text
-            if full_response:
-                print("\n" + "="*50)
-                print("ARTICLE COMPLETE:")
-                print(full_response)
-                print("="*50)
-                return full_response
+            # Usar run() en lugar de run_stream() para obtener solo la respuesta final
+            response = await workflow_agent.run(messages, thread=thread)
+            
+            # Extraer solo el texto del mensaje final del asistente
+            if response.messages:
+                final_message = response.messages[-1]  # Último mensaje (debe ser del asistente)
+                if final_message.text:
+                    print(final_message.text)
+                    return final_message.text
+            
+            return ""
         except asyncio.CancelledError:
             print("\nChat cancelled by user.")
         except Exception as e:
