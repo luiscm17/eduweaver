@@ -1,32 +1,44 @@
 import os
 
-# Cargar variables de entorno (solo una vez en toda la app)
 from dotenv import load_dotenv
 load_dotenv()
 
 class AzureSettings:
-    """Configuración para Azure OpenAI"""
+    """Configuration for Agent"""
     
     # Azure OpenAI Settings
-    OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-    OPENAI_CHAT_DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
+    AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+    AZURE_OPENAI_CHAT_DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
     
-    # Azure AI Foundry Settings (para uso futuro)
-    AI_PROJECT_ENDPOINT = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
-    AI_MODEL_DEPLOYMENT_NAME = os.getenv("AZURE_AI_MODEL_DEPLOYMENT_NAME")
-    
-    @classmethod
-    def validate_openai_settings(cls):
-        """Valida que las configuraciones de Azure OpenAI estén presentes"""
-        if not cls.OPENAI_ENDPOINT:
-            raise ValueError("AZURE_OPENAI_ENDPOINT no está configurado")
-        if not cls.OPENAI_CHAT_DEPLOYMENT_NAME:
-            raise ValueError("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME no está configurado")
+    # Azure AI Foundry Settings
+    AZURE_AI_PROJECT_ENDPOINT = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+    AZURE_AI_MODEL_DEPLOYMENT_NAME = os.getenv("AZURE_AI_MODEL_DEPLOYMENT_NAME")
+
+    # OpenAI Settings
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    OPENAI_MODEL = os.getenv("OPENAI_MODEL")
     
     @classmethod
-    def validate_ai_foundry_settings(cls):
-        """Valida que las configuraciones de Azure AI Foundry estén presentes"""
-        if not cls.AI_PROJECT_ENDPOINT:
-            raise ValueError("AZURE_AI_PROJECT_ENDPOINT no está configurado")
-        if not cls.AI_MODEL_DEPLOYMENT_NAME:
-            raise ValueError("AZURE_AI_MODEL_DEPLOYMENT_NAME no está configurado")
+    def azure_openai_settings(cls):
+        """Validate that Azure OpenAI configurations are present"""
+        if not cls.AZURE_OPENAI_ENDPOINT:
+            raise ValueError("AZURE_OPENAI_ENDPOINT is not configured")
+        if not cls.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME:
+            raise ValueError("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME is not configured")
+    
+    @classmethod
+    def azure_ai_foundry_settings(cls):
+        """Validate that Azure AI Foundry configurations are present"""
+        if not cls.AZURE_AI_PROJECT_ENDPOINT:
+            raise ValueError("AZURE_AI_PROJECT_ENDPOINT is not configured")
+        if not cls.AZURE_AI_MODEL_DEPLOYMENT_NAME:
+            raise ValueError("AZURE_AI_MODEL_DEPLOYMENT_NAME is not configured")
+    
+    @classmethod
+    def openai_settings(cls):
+        """Validate that OpenAI configurations are present"""
+        if not cls.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY is not configured")
+        if not cls.OPENAI_MODEL:
+            raise ValueError("OPENAI_MODEL is not configured")
+            
