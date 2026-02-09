@@ -15,16 +15,22 @@ class GroupChatOrchestration:
         self.research_agent = ResearchIntelligenceAgent()
         self.content_agent = ContentGenerationAgent()
         self.orchestrator_agent = OrchestratorAgent()
+        self._agents_initialized = False
     
-    def _build_workflow(self):
+    async def _build_workflow(self):
         """Build the group chat workflow"""
+        # Get agents (handle async for research agent)
+        orchestrator_agent = self.orchestrator_agent.get_agent()
+        research_agent = await self.research_agent.get_agent()
+        content_agent = self.content_agent.get_agent()
+        
         return (
             GroupChatBuilder()
-            .with_orchestrator(agent=self.orchestrator_agent.get_agent())
+            .with_orchestrator(agent=orchestrator_agent)
             .with_termination_condition(lambda messages: sum(1 for msg in messages if msg.role == Role.ASSISTANT) >= 6)
             .participants([
-                self.research_agent.get_agent(),
-                self.content_agent.get_agent()
+                research_agent,
+                content_agent
             ])
             .build()
         )
@@ -32,7 +38,7 @@ class GroupChatOrchestration:
     async def execute(self, topic: str):
         """Execute group chat workflow"""
         # Build workflow
-        workflow = self._build_workflow()
+        workflow = await self._build_workflow()
         
         # Convert workflow to agent for thread management
         workflow_agent = workflow.as_agent(name="MultiAgentChat")
