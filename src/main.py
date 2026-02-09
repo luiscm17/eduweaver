@@ -15,8 +15,7 @@ async def main():
                 break
             
             print("Processing with group chat workflow...")
-            response = await workflow_orchestrator.execute(user_input)
-            print(response)
+            await workflow_orchestrator.execute(user_input)
 
     except Exception as e:
         print(f"Error: {e}")
