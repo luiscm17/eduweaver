@@ -65,13 +65,28 @@ Services used in this milestone:
 
 - ingestion-service
 - vector database
-- blob storage
+- blob storage (Azurite / Azure)
 
 Relevant documentation:
 
 - docs/dev/document-schema.md
 - docs/dev/ingestion-pipeline.md
 - docs/dev/retrieval-architecture.md
+
+---
+
+## Task 0 — Blob Storage Adapter & Config
+
+Goal: design the configuration and adapter that allow the ingestion service to access PDFs stored in Azure Blob Storage or Azurite before parsing.
+
+Steps:
+
+- implement `app/config/settings.py` to load Azure credentials via environment variables
+- expose helpers in `app/config/credentials.py` for SAS generation or token refresh as needed
+- create `app/adapters/blob_storage.py` that lists blobs and yields read streams or SAS URLs
+- ensure downstream parsers consume the provided stream instead of expecting a local download
+
+This task centralizes secrets and keeps the pipeline agnostic of the storage provider.
 
 ---
 
@@ -89,7 +104,7 @@ Steps:
 Example test file:
 
 ```
-docs/Artificial_Neural_Network_Model_for_Prediction_of_Drilling_Rate.md
+resources/test-document.pdf
 ```
 
 ---

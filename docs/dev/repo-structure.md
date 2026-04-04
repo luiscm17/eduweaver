@@ -159,6 +159,16 @@ Responsibilities:
 - chunking
 - embedding creation
 - vector indexing
+- Azure Blob Storage interaction
+- parser adapters configuration
+
+Additional directories:
+
+```
+app/config/
+  settings.py  # credentials via environment variables
+  credentials.py  # credential refresh helpers
+```
 
 Technologies:
 
