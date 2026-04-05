@@ -104,10 +104,8 @@ class AISearchSettings:
 class KnowledgeSourceSettings:
     """Centralized settings for the default knowledge source."""
 
-    _KS_DEFAULT_NAME = "ks-name-default"
-    _KS_DEFAULT_DESCRIPTION = "Knowledge Source automática desde Blob con mi PDF"
-    _KS_NAME: Optional[str] = os.getenv("KNOWLEDGE_SOURCE_NAME")
-    _KS_DESCRIPTION: Optional[str] = os.getenv("KNOWLEDGE_SOURCE_DESCRIPTION")
+    _KS_NAME = "default-knowledge-source"
+    _KS_DESCRIPTION = "Knowledge source created from documents stored in blob storage"
 
     @classmethod
     def _value_or_default(cls, value: Optional[str], default: str) -> str:
@@ -119,12 +117,12 @@ class KnowledgeSourceSettings:
     @classmethod
     def get_name(cls) -> str:
         """Return the configured knowledge source name."""
-        return cls._value_or_default(cls._KS_NAME, cls._KS_DEFAULT_NAME)
+        return cls._KS_NAME
 
     @classmethod
     def get_description(cls) -> str:
         """Return the configured knowledge source description."""
-        return cls._value_or_default(cls._KS_DESCRIPTION, cls._KS_DEFAULT_DESCRIPTION)
+        return cls._KS_DESCRIPTION
 
     @classmethod
     def validate(cls) -> None:
@@ -136,22 +134,12 @@ class KnowledgeSourceSettings:
 class KnowledgeBaseSettings:
     """Centralized settings for the default knowledge base."""
 
-    _KB_DEFAULT_NAME = "kb-name-deafult"
-    _KB_DEFAULT_DESCRIPTION = "Agentic RAG sobre mi PDF"
-    _KB_DEFAULT_ANSWER_INSTRUCTIONS = (
-        "Responde en español, cita siempre la página del PDF."
+    _KB_NAME = "default-knowledge-base"
+    _KB_DESCRIPTION = (
+        "Retrieval augmented knowledge base built from indexed document content"
     )
-    _KB_DEFAULT_RETRIEVAL_INSTRUCTIONS = (
-        "Responde en español, cita siempre la página del PDF."
-    )
-    _KB_NAME: Optional[str] = os.getenv("KNOWLEDGE_BASE_NAME")
-    _KB_DESCRIPTION: Optional[str] = os.getenv("KNOWLEDGE_BASE_DESCRIPTION")
-    _KB_ANSWER_INSTRUCTIONS: Optional[str] = os.getenv(
-        "KNOWLEDGE_BASE_ANSWER_INSTRUCTIONS"
-    )
-    _KB_RETRIEVAL_INSTRUCTIONS: Optional[str] = os.getenv(
-        "KNOWLEDGE_BASE_RETRIEVAL_INSTRUCTIONS"
-    )
+    _KB_ANSWER_INSTRUCTIONS = "Answer using retrieved context only. Cite document page. No fabrication."
+    _KB_RETRIEVAL_INSTRUCTIONS = "Use most relevant retrieved passages. Prefer accuracy. Reference document page when available."
 
     @classmethod
     def _value_or_default(cls, value: Optional[str], default: str) -> str:
@@ -162,23 +150,19 @@ class KnowledgeBaseSettings:
 
     @classmethod
     def get_name(cls) -> str:
-        return cls._value_or_default(cls._KB_NAME, cls._KB_DEFAULT_NAME)
+        return cls._KB_NAME
 
     @classmethod
     def get_description(cls) -> str:
-        return cls._value_or_default(cls._KB_DESCRIPTION, cls._KB_DEFAULT_DESCRIPTION)
+        return cls._KB_DESCRIPTION
 
     @classmethod
     def get_answer_instructions(cls) -> str:
-        return cls._value_or_default(
-            cls._KB_ANSWER_INSTRUCTIONS, cls._KB_DEFAULT_ANSWER_INSTRUCTIONS
-        )
+        return cls._KB_ANSWER_INSTRUCTIONS
 
     @classmethod
     def get_retrieval_instructions(cls) -> str:
-        return cls._value_or_default(
-            cls._KB_RETRIEVAL_INSTRUCTIONS, cls._KB_DEFAULT_RETRIEVAL_INSTRUCTIONS
-        )
+        return cls._KB_RETRIEVAL_INSTRUCTIONS
 
     @classmethod
     def validate(cls) -> None:
