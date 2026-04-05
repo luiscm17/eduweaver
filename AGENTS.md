@@ -1,20 +1,18 @@
 # AGENTS.md
 
-This document provides guidance for autonomous coding agents operating in this repository.
-It explains how to build, run, test, and modify the codebase safely and consistently.
+Guidelines for autonomous coding agents working in this repository.
+This file explains how to build, run, test, and modify the project safely.
 
-The repository is a Python project managed with **uv** and structured as a small monorepo
-containing application services under the `apps/` directory.
-
-Agents should follow these conventions when reading, modifying, or extending the code.
+The project is a **Python monorepo managed with `uv`** and currently contains
+an ingestion service used for document processing and indexing.
 
 ---
 
 # Repository Overview
 
-Root project name: `eduweaver`
+Project: **eduweaver**
 
-Primary application currently present:
+Directory structure (simplified):
 
 ```
 apps/
@@ -24,29 +22,34 @@ apps/
       adapters/
       indexing/
       pipeline/
+      config/
 ```
 
-The ingestion service processes documents through a pipeline:
+Pipeline stages follow a transformation model:
 
+```
 parse → normalize → chunk → embed → index
+```
 
-Key modules:
+Key responsibilities:
 
-- `pipeline/` – document processing stages
-- `indexing/` – vector indexing logic
-- `adapters/` – integration points (external systems, APIs, etc.)
-- `main.py` – entrypoint used for CLI execution
+- **pipeline/** – document transformation stages
+- **indexing/** – vector index creation and updates
+- **adapters/** – external integrations (blob storage, search, etc.)
+- **config/** – environment and runtime configuration
+
+Agents should preserve this layered architecture.
 
 ---
 
 # Environment Setup
 
-The project uses **uv** for dependency management and execution.
+The project uses **uv** for dependency management.
 
-Python version:
+Python requirement:
 
 ```
->= 3.13
+>=3.13
 ```
 
 Install dependencies:
@@ -55,13 +58,13 @@ Install dependencies:
 uv sync
 ```
 
-Create virtual environment (if not already present):
+Create environment (if needed):
 
 ```
 uv venv
 ```
 
-Run commands inside the environment using:
+Run commands inside the environment:
 
 ```
 uv run <command>
@@ -69,42 +72,35 @@ uv run <command>
 
 ---
 
-# Running the Ingestion Service
+# Running the Service
 
-Current CLI entrypoint:
+Primary entrypoint:
 
 ```
 apps/ingestion_service/app/main.py
 ```
 
-Run the ingestion pipeline on a file:
+Run ingestion on a document:
 
 ```
-uv run python -m apps.ingestion_service.app.main somefile.pdf
+uv run python -m apps.ingestion_service.app.main <file>
 ```
 
-Alternatively run from the service directory:
-
-```
-cd apps/ingestion_service
-uv run python -m app.main somefile.pdf
-```
-
-Agents should prefer **module execution (`-m`)** rather than running Python files directly.
+Prefer **module execution (`-m`)** instead of executing files directly.
 
 ---
 
-# Build
+# Build Commands
 
-The project currently has no compiled artifacts.
+There is no compilation step.
 
-Build step is simply dependency resolution:
+Build = dependency resolution.
 
 ```
 uv sync
 ```
 
-If packaging becomes necessary later, build using:
+Optional packaging (future):
 
 ```
 uv build
@@ -112,17 +108,17 @@ uv build
 
 ---
 
-# Linting
+# Linting & Formatting
 
-The repository includes a `.ruff_cache`, indicating that **Ruff** is used for linting.
+Linting is handled with **Ruff**.
 
-Run lint:
+Run linter:
 
 ```
 uv run ruff check .
 ```
 
-Auto-fix lint issues:
+Auto‑fix lint issues:
 
 ```
 uv run ruff check . --fix
@@ -134,21 +130,13 @@ Format code:
 uv run ruff format .
 ```
 
-Agents should run Ruff formatting before committing code changes.
+Agents should run formatting before committing changes.
 
 ---
 
 # Testing
 
-There are currently **no test files in the repository**, but agents should assume
-that `pytest` will be used when tests are introduced.
-
-Expected test layout:
-
-```
-tests/
-  test_pipeline.py
-```
+Testing framework: **pytest** (expected convention).
 
 Run all tests:
 
@@ -156,13 +144,13 @@ Run all tests:
 uv run pytest
 ```
 
-Run a specific test file:
+Run a single file:
 
 ```
 uv run pytest tests/test_pipeline.py
 ```
 
-Run a single test function:
+Run a single test:
 
 ```
 uv run pytest tests/test_pipeline.py::test_chunk_document
@@ -174,72 +162,52 @@ Run tests matching a pattern:
 uv run pytest -k chunk
 ```
 
-Agents adding features should also add tests.
+Agents introducing new functionality should add tests when possible.
 
 ---
 
-# Code Style Guidelines
+# Code Style
 
 ## General Principles
 
 - Prefer clarity over cleverness
-- Keep functions small and focused
-- Favor composition over inheritance
+- Keep functions small and composable
 - Avoid hidden side effects
-
-Pipeline stages should behave like **pure transformations when possible**.
+- Favor pure transformations in pipeline stages
 
 ---
 
 # Imports
 
-Use **absolute imports from the repository root**.
+Use **absolute imports** from the repository root.
 
 Example:
 
 ```
-from apps.ingestion_service.app.pipeline.parse_document import parse_document
-```
-
-Avoid relative imports like:
-
-```
-from ..pipeline import parse_document
-```
-
-Import ordering:
-
-1. Standard library
-2. Third‑party libraries
-3. Local project modules
-
-Example:
-
-```
-import pathlib
-
-import numpy as np
-
 from apps.ingestion_service.app.pipeline.chunk_document import chunk_document
 ```
 
+Avoid relative imports.
+
+Import order:
+
+1. Standard library
+2. Third‑party libraries
+3. Local modules
+
 ---
 
-# Formatting
-
-Formatting is enforced using **Ruff**.
-
-General rules:
+# Formatting Rules
 
 - 4 space indentation
 - 88–100 column width
 - trailing commas in multiline structures
-- double quotes for strings
+- use double quotes for strings
 
 Example:
 
 ```
-chunks = chunk_document(
+result = process_document(
     text,
     chunk_size=512,
 )
@@ -257,26 +225,20 @@ Example:
 def chunk_document(text: str, chunk_size: int) -> list[str]:
 ```
 
-Prefer built-in generics (Python 3.9+):
+Prefer built‑in generics:
 
 ```
 list[str]
 dict[str, Any]
 ```
 
-Avoid using `Any` unless absolutely necessary.
+Avoid `Any` unless necessary.
 
 ---
 
 # Naming Conventions
 
-Variables:
-
-```
-snake_case
-```
-
-Functions:
+Variables and functions:
 
 ```
 snake_case
@@ -294,7 +256,7 @@ Constants:
 UPPER_SNAKE_CASE
 ```
 
-File names:
+Files:
 
 ```
 snake_case.py
@@ -304,13 +266,11 @@ snake_case.py
 
 # Error Handling
 
-Do not swallow exceptions silently.
+Never swallow exceptions.
 
 Bad:
 
 ```
-try:
-    process()
 except Exception:
     pass
 ```
@@ -318,19 +278,17 @@ except Exception:
 Good:
 
 ```
-try:
-    process()
 except Exception as exc:
-    raise RuntimeError("Document processing failed") from exc
+    raise RuntimeError("Pipeline stage failed") from exc
 ```
 
-Pipeline stages should raise **explicit, meaningful errors**.
+Errors should provide meaningful context.
 
 ---
 
 # Logging
 
-Prefer structured logging over print statements.
+Prefer structured logging instead of prints.
 
 Example:
 
@@ -338,75 +296,48 @@ Example:
 import logging
 
 logger = logging.getLogger(__name__)
-logger.info("Chunking document", extra={"chunks": len(chunks)})
+logger.info("Processing document", extra={"chunks": len(chunks)})
 ```
 
-Avoid `print()` except for CLI user feedback.
+`print()` is acceptable only for CLI feedback.
 
 ---
 
-# Pipeline Design Guidelines
+# Architecture Guidelines
 
-Pipeline modules should follow this pattern:
-
-```
-input -> transform -> output
-```
-
-Example structure:
+Pipeline modules should follow:
 
 ```
-parse_document()
-normalize_document()
-chunk_document()
-generate_embeddings()
+input → transform → output
 ```
 
 Each stage should:
 
-- accept clear inputs
+- accept explicit inputs
 - return explicit outputs
 - avoid global state
 
----
-
-# When Modifying the Codebase
-
-Agents should:
-
-1. Keep functions small and composable
-2. Avoid introducing circular imports
-3. Maintain clear pipeline flow
-4. Preserve deterministic behavior
-
-When adding new pipeline steps:
-
-- place them under `pipeline/`
-- add clear docstrings
-- add tests
+Avoid circular imports between pipeline stages.
 
 ---
 
-# Files That Should Not Be Modified
+# Files Agents Must Never Modify
 
-Agents should **not modify**:
+Do not modify generated or environment folders:
 
-- `.venv/`
-- `.ruff_cache/`
-- `.git/`
-
-These are environment or tooling artifacts.
+```
+.venv/
+.ruff_cache/
+.git/
+__pycache__/
+```
 
 ---
 
-# Future Improvements (Agents May Implement)
+# Editor / AI Rules
 
-Recommended improvements:
+No Cursor rules (`.cursor/rules`) or Copilot rules
+(`.github/copilot-instructions.md`) were detected in this repository.
 
-- Add a `tests/` directory
-- Introduce a proper CLI entrypoint
-- Add structured logging configuration
-- Introduce type checking with `mypy`
-- Add CI lint + test workflow
-
-Agents implementing these improvements should update this document accordingly.
+If they are introduced later, agents must follow them in addition
+to this document.

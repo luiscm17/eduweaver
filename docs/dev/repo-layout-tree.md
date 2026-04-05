@@ -69,13 +69,17 @@ eduweaver/
 │  └─ ingestion-service/
 │     ├─ app/
 │     │  ├─ adapters/
-│     │  │  ├─ pdf_adapter.py
-│     │  │  ├─ markdown_adapter.py
-│     │  │  └─ docx_adapter.py
-│     │  ├─ parsers/
-│     │  │  ├─ docling_parser.py
-│     │  │  └─ azure_di_parser.py
+│     │  │  ├─ blob_storage.py
+│     │  │  ├─ parser_adapters.py
+│     │  ├─ config/
+│     │  │  ├─ settings.py
+│     │  │  └─ credentials.py
 │     │  ├─ pipeline/
+│     │  │  ├─ azure_ai_search/
+│     │  │  │  ├─ knowledge_base.py
+│     │  │  │  ├─ knowledge_source.py
+│     │  │  │  └─ mcp_connection.py
+│     │  │  ├─ docling/
 │     │  │  ├─ normalize.py
 │     │  │  ├─ chunking.py
 │     │  │  └─ embeddings.py

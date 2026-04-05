@@ -1,53 +1,33 @@
-"""
-Ingestion Service Entry Point
+"""Coordinator for the RAG pipeline: create and ingest a knowledge source."""
 
-Initial prototype for Milestone 01.
-
-Pipeline:
-PDF -> Parse -> Normalize -> Chunk -> Embed -> Index
-
-This version runs as a local script for development and testing.
-"""
-
-import sys
-from pathlib import Path
-
-from apps.ingestion_service.app.pipeline.parse_document import parse_document
-from apps.ingestion_service.app.pipeline.normalize_document import normalize_document
-from apps.ingestion_service.app.pipeline.chunk_document import chunk_document
-from apps.ingestion_service.app.pipeline.generate_embeddings import generate_embeddings
-from apps.ingestion_service.app.indexing.vector_indexer import index_chunks
+from apps.ingestion_service.app.config.settings import (
+    KnowledgeBaseSettings,
+    KnowledgeSourceSettings,
+)
+from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_base import KnowledgeBaseService
+from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_source import KnowledgeSourceService
+from apps.ingestion_service.app.pipeline.azure_ai_search.mcp_connection import create_or_update_mcp_connection
 
 
-def run_pipeline(file_path: str):
-    path = Path(file_path)
+def run_pipeline(name: str, description: str) -> None:
+    """Build and ingest a knowledge source and its knowledge base."""
+    ks_service = KnowledgeSourceService()
+    ks = ks_service.create_knowledge_source(name, description)
+    ks_service.ingest(ks)
 
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
+    kb_service = KnowledgeBaseService()
+    kb_service.create_and_deploy(name)
 
-    print("\n--- Ingestion Pipeline Started ---")
-
-    print("[1] Parsing document...")
-    parsed = parse_document(path)
-
-    print("[2] Normalizing document structure...")
-    normalized = normalize_document(parsed)
-
-    print("[3] Creating semantic chunks...")
-    chunks = chunk_document(normalized)
-
-    print("[4] Generating embeddings...")
-    embedded_chunks = generate_embeddings(chunks)
-
-    print("[5] Indexing chunks in vector database...")
-    index_chunks(embedded_chunks)
-
-    print("--- Ingestion Pipeline Completed ---\n")
+    connection_id = create_or_update_mcp_connection()
+    print(f"Knowledge Source '{name}' ingested successfully.")
+    print("Knowledge Base deployed with documented retrieval settings.")
+    print(f"Project connection synced: {connection_id}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python main.py <document_path>")
-        sys.exit(1)
-
-    run_pipeline(sys.argv[1])
+    KnowledgeSourceSettings.validate()
+    KnowledgeBaseSettings.validate()
+    run_pipeline(
+        KnowledgeSourceSettings.get_name(),
+        KnowledgeSourceSettings.get_description(),
+    )
