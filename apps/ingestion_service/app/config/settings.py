@@ -4,23 +4,31 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class BlobStorageSettings:
-    _AZURE_STORAGE_CONNECTION_STRING: Optional[str]=os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-    _AZURE_STORAGE_CONTAINER_NAME=os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+    _AZURE_STORAGE_CONNECTION_STRING: Optional[str] = os.getenv(
+        "AZURE_STORAGE_CONNECTION_STRING"
+    )
+    _AZURE_STORAGE_CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
 
     @classmethod
-    def get_connection_string(cls) -> None:
+    def get_connection_string(cls) -> str:
         if not cls._AZURE_STORAGE_CONNECTION_STRING:
-            raise ValueError("Azure String is not configured.")
-        
+            raise ValueError("Azure connection string is not configured.")
+        return cls._AZURE_STORAGE_CONNECTION_STRING
+
     @classmethod
-    def get_container_name(cls) -> None:
+    def get_container_name(cls) -> str:
         if not cls._AZURE_STORAGE_CONTAINER_NAME:
-            raise ValueError("Azure Container Name is not configured.")
+            raise ValueError("Azure container name is not configured.")
+        return cls._AZURE_STORAGE_CONTAINER_NAME
+
 
 class AIModelSettings:
     _AZURE_OPENAI_ENDPOINT: Optional[str] = os.getenv("AZURE_OPENAI_ENDPOINT")
-    _AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: Optional[str] = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
+    _AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: Optional[str] = os.getenv(
+        "AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"
+    )
     _AZURE_OPENAI_MODEL_NAME: Optional[str] = os.getenv("AZURE_OPENAI_MODEL_NAME")
     _AZURE_OPENAI_API_KEY: Optional[str] = os.getenv("AZURE_OPENAI_API_KEY")
     _EMBEDDING_MODEL_NAME: Optional[str] = os.getenv("EMBEDDING_MODEL_NAME")
@@ -32,22 +40,22 @@ class AIModelSettings:
     def get_openai_endpoint(cls) -> None:
         if not cls._AZURE_OPENAI_ENDPOINT:
             raise ValueError("Azure OopenAI Endpoint is not configured.")
-        
+
     @classmethod
     def get_chat_deployment_name(cls) -> None:
         if not cls._AZURE_OPENAI_CHAT_DEPLOYMENT_NAME:
             raise ValueError("Azure OpenAI Chat Deployment Name is not Configured.")
-        
+
     @classmethod
     def get_model_name(cls) -> None:
         if not cls._AZURE_OPENAI_MODEL_NAME:
             raise ValueError("Azure OpenAI Model Name is not configured.")
-        
+
     @classmethod
     def get_api_key(cls) -> None:
         if not cls._AZURE_OPENAI_API_KEY:
             raise ValueError("Azure OpenAI API Key is not configured.")
-    
+
     @classmethod
     def get_embedding_deployment_name(cls) -> str:
         embedding_deployment_name = cls._EMBEDDING_MODEL_DEPLOYMENT_NAME
@@ -61,12 +69,12 @@ class AIModelSettings:
         if not embedding_model_name:
             raise ValueError("EMBEDDING_MODEL_NAME is not configured")
         return embedding_model_name
-        
+
+
 class AISearchSettings:
     _AI_SEARCH_ENDPOINT: Optional[str] = os.getenv("AI_SEARCH_ENDPOINT")
     _AI_SEARCH_API_KEY: Optional[str] = os.getenv("AI_SEARCH_KEY")
     _AI_SEARCH_INDEX_NAME: Optional[str] = os.getenv("AI_SEARCH_INDEX_NAME")
-
 
     @classmethod
     def get_endpoint(cls) -> str:
@@ -91,7 +99,8 @@ class AISearchSettings:
         if not ai_search_name:
             raise ValueError("AI_SEARCH_INDEX_NAME is not configured")
         return ai_search_name
-        
+
+
 class KnowledgeSourceSettings:
     """Centralized settings for the default knowledge source."""
 
@@ -177,6 +186,7 @@ class KnowledgeBaseSettings:
         cls.get_description()
         cls.get_answer_instructions()
         cls.get_retrieval_instructions()
+
 
 class MCPConnectionSettings:
     """Configuration for exposing the knowledge base as an MCP tool."""
