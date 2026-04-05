@@ -8,5 +8,7 @@ dependencies = [
     "agent-framework>=1.0.0b260130",
     "agent-framework-devui>=1.0.0b260130",
     "azure-identity>=1.26.0b1",
+    "azure-search-documents>=11.7.0b2",
     "azure-storage-blob>=12.29.0b1",
+    "fastapi[standard]>=0.128.2",
 ]
