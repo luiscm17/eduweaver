@@ -1,15 +1,38 @@
-import os
 from typing import Optional
-from dotenv import load_dotenv
 
-load_dotenv()
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class EnvSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    AZURE_STORAGE_CONNECTION_STRING: Optional[str] = None
+    AZURE_STORAGE_CONTAINER_NAME: Optional[str] = None
+
+    AZURE_OPENAI_ENDPOINT: Optional[str] = None
+    AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: Optional[str] = None
+    AZURE_OPENAI_MODEL_NAME: Optional[str] = None
+    AZURE_OPENAI_API_KEY: Optional[str] = None
+
+    EMBEDDING_MODEL_NAME: Optional[str] = None
+    EMBEDDING_MODEL_DEPLOYMENT_NAME: Optional[str] = None
+
+    AI_SEARCH_ENDPOINT: Optional[str] = None
+    AI_SEARCH_KEY: Optional[str] = None
+    AI_SEARCH_INDEX_NAME: Optional[str] = None
+
+    AI_PROJECT_RESOURCE_ID: Optional[str] = None
+    AI_PROJECT_CONNECTION_NAME: Optional[str] = "rag-mcp-connection"
+
+
+env = EnvSettings()
 
 
 class BlobStorageSettings:
-    _AZURE_STORAGE_CONNECTION_STRING: Optional[str] = os.getenv(
-        "AZURE_STORAGE_CONNECTION_STRING"
+    _AZURE_STORAGE_CONNECTION_STRING: Optional[str] = (
+        env.AZURE_STORAGE_CONNECTION_STRING
     )
-    _AZURE_STORAGE_CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+    _AZURE_STORAGE_CONTAINER_NAME = env.AZURE_STORAGE_CONTAINER_NAME
 
     @classmethod
     def get_connection_string(cls) -> str:
@@ -25,15 +48,15 @@ class BlobStorageSettings:
 
 
 class AIModelSettings:
-    _AZURE_OPENAI_ENDPOINT: Optional[str] = os.getenv("AZURE_OPENAI_ENDPOINT")
-    _AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: Optional[str] = os.getenv(
-        "AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"
+    _AZURE_OPENAI_ENDPOINT: Optional[str] = env.AZURE_OPENAI_ENDPOINT
+    _AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: Optional[str] = (
+        env.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME
     )
-    _AZURE_OPENAI_MODEL_NAME: Optional[str] = os.getenv("AZURE_OPENAI_MODEL_NAME")
-    _AZURE_OPENAI_API_KEY: Optional[str] = os.getenv("AZURE_OPENAI_API_KEY")
-    _EMBEDDING_MODEL_NAME: Optional[str] = os.getenv("EMBEDDING_MODEL_NAME")
-    _EMBEDDING_MODEL_DEPLOYMENT_NAME: Optional[str] = os.getenv(
-        "EMBEDDING_MODEL_DEPLOYMENT_NAME"
+    _AZURE_OPENAI_MODEL_NAME: Optional[str] = env.AZURE_OPENAI_MODEL_NAME
+    _AZURE_OPENAI_API_KEY: Optional[str] = env.AZURE_OPENAI_API_KEY
+    _EMBEDDING_MODEL_NAME: Optional[str] = env.EMBEDDING_MODEL_NAME
+    _EMBEDDING_MODEL_DEPLOYMENT_NAME: Optional[str] = (
+        env.EMBEDDING_MODEL_DEPLOYMENT_NAME
     )
 
     @classmethod
@@ -72,9 +95,9 @@ class AIModelSettings:
 
 
 class AISearchSettings:
-    _AI_SEARCH_ENDPOINT: Optional[str] = os.getenv("AI_SEARCH_ENDPOINT")
-    _AI_SEARCH_API_KEY: Optional[str] = os.getenv("AI_SEARCH_KEY")
-    _AI_SEARCH_INDEX_NAME: Optional[str] = os.getenv("AI_SEARCH_INDEX_NAME")
+    _AI_SEARCH_ENDPOINT: Optional[str] = env.AI_SEARCH_ENDPOINT
+    _AI_SEARCH_API_KEY: Optional[str] = env.AI_SEARCH_KEY
+    _AI_SEARCH_INDEX_NAME: Optional[str] = env.AI_SEARCH_INDEX_NAME
 
     @classmethod
     def get_endpoint(cls) -> str:
@@ -138,7 +161,9 @@ class KnowledgeBaseSettings:
     _KB_DESCRIPTION = (
         "Retrieval augmented knowledge base built from indexed document content"
     )
-    _KB_ANSWER_INSTRUCTIONS = "Answer using retrieved context only. Cite document page. No fabrication."
+    _KB_ANSWER_INSTRUCTIONS = (
+        "Answer using retrieved context only. Cite document page. No fabrication."
+    )
     _KB_RETRIEVAL_INSTRUCTIONS = "Use most relevant retrieved passages. Prefer accuracy. Reference document page when available."
 
     @classmethod
@@ -175,10 +200,8 @@ class KnowledgeBaseSettings:
 class MCPConnectionSettings:
     """Configuration for exposing the knowledge base as an MCP tool."""
 
-    _PROJECT_RESOURCE_ID: Optional[str] = os.getenv("AI_PROJECT_RESOURCE_ID")
-    _PROJECT_CONNECTION_NAME: Optional[str] = os.getenv(
-        "AI_PROJECT_CONNECTION_NAME", "rag-mcp-connection"
-    )
+    _PROJECT_RESOURCE_ID: Optional[str] = env.AI_PROJECT_RESOURCE_ID
+    _PROJECT_CONNECTION_NAME: Optional[str] = env.AI_PROJECT_CONNECTION_NAME
 
     @classmethod
     def get_project_resource_id(cls) -> str:
