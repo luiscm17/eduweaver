@@ -3,7 +3,7 @@ from typing import Iterator
 
 from azure.storage.blob import BlobClient
 
-from app.config.credentials import (
+from apps.ingestion_service.app.config.credentials import (
     download_blob_stream,
     get_blob_client,
     list_blob_names,

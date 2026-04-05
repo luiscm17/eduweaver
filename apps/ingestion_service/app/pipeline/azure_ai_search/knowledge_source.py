@@ -10,12 +10,12 @@ from azure.search.documents.indexes.models import (
     KnowledgeSourceAzureOpenAIVectorizer,
 )
 
-from app.config.settings import (
+from apps.ingestion_service.app.config.settings import (
     BlobStorageSettings,
     AISearchSettings,
     AIModelSettings,
 )
-from app.indexing.vector_indexer import SearchIndexService
+from apps.ingestion_service.app.indexing.vector_indexer import SearchIndexService
 
 
 class KnowledgeSourceService:

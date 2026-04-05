@@ -9,11 +9,11 @@ from azure.search.documents.indexes.models import (
     KnowledgeSourceReference,
 )
 
-from app.config.settings import (
+from apps.ingestion_service.app.config.settings import (
     AIModelSettings,
     KnowledgeBaseSettings,
 )
-from app.indexing.vector_indexer import SearchIndexService
+from apps.ingestion_service.app.indexing.vector_indexer import SearchIndexService
 
 
 class KnowledgeBaseService:

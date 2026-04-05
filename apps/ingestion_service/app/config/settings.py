@@ -60,24 +60,32 @@ class AIModelSettings:
     )
 
     @classmethod
-    def get_openai_endpoint(cls) -> None:
-        if not cls._AZURE_OPENAI_ENDPOINT:
-            raise ValueError("Azure OopenAI Endpoint is not configured.")
+    def get_openai_endpoint(cls) -> str:
+        endpoint = cls._AZURE_OPENAI_ENDPOINT
+        if not endpoint:
+            raise ValueError("Azure OpenAI Endpoint is not configured.")
+        return endpoint
 
     @classmethod
-    def get_chat_deployment_name(cls) -> None:
-        if not cls._AZURE_OPENAI_CHAT_DEPLOYMENT_NAME:
-            raise ValueError("Azure OpenAI Chat Deployment Name is not Configured.")
+    def get_chat_deployment_name(cls) -> str:
+        deployment = cls._AZURE_OPENAI_CHAT_DEPLOYMENT_NAME
+        if not deployment:
+            raise ValueError("Azure OpenAI Chat Deployment Name is not configured.")
+        return deployment
 
     @classmethod
-    def get_model_name(cls) -> None:
-        if not cls._AZURE_OPENAI_MODEL_NAME:
+    def get_model_name(cls) -> str:
+        model = cls._AZURE_OPENAI_MODEL_NAME
+        if not model:
             raise ValueError("Azure OpenAI Model Name is not configured.")
+        return model
 
     @classmethod
-    def get_api_key(cls) -> None:
-        if not cls._AZURE_OPENAI_API_KEY:
+    def get_api_key(cls) -> str:
+        key = cls._AZURE_OPENAI_API_KEY
+        if not key:
             raise ValueError("Azure OpenAI API Key is not configured.")
+        return key
 
     @classmethod
     def get_embedding_deployment_name(cls) -> str:

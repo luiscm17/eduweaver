@@ -3,7 +3,7 @@
 import requests
 
 from azure.identity import DefaultAzureCredential
-from app.config.settings import MCPConnectionSettings
+from apps.ingestion_service.app.config.settings import MCPConnectionSettings
 
 
 def _build_connection_details() -> tuple[str, str, str] | None:

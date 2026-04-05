@@ -1,12 +1,12 @@
 """Coordinator for the RAG pipeline: create and ingest a knowledge source."""
 
-from app.config.settings import (
+from apps.ingestion_service.app.config.settings import (
     KnowledgeBaseSettings,
     KnowledgeSourceSettings,
 )
-from app.pipeline.azure_ai_search.knowledge_base import KnowledgeBaseService
-from app.pipeline.azure_ai_search.knowledge_source import KnowledgeSourceService
-from app.pipeline.azure_ai_search.mcp_connection import create_or_update_mcp_connection
+from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_base import KnowledgeBaseService
+from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_source import KnowledgeSourceService
+from apps.ingestion_service.app.pipeline.azure_ai_search.mcp_connection import create_or_update_mcp_connection
 
 
 def run_pipeline(name: str, description: str) -> None:

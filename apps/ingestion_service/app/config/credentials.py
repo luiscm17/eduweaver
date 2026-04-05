@@ -5,7 +5,7 @@ from typing import Iterator
 
 from azure.storage.blob import BlobServiceClient, BlobClient
 
-from .settings import BlobStorageSettings
+from apps.ingestion_service.app.config.settings import BlobStorageSettings
 
 
 def create_blob_service_client() -> BlobServiceClient:

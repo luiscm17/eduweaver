@@ -3,7 +3,7 @@
 from azure.identity import DefaultAzureCredential
 from azure.search.documents.indexes import SearchIndexClient
 
-from app.config.settings import AISearchSettings
+from apps.ingestion_service.app.config.settings import AISearchSettings
 
 
 class SearchIndexService:
