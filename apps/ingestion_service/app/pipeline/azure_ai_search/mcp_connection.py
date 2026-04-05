@@ -17,7 +17,6 @@ def _build_connection_details() -> tuple[str, str, str] | None:
 
 
 def create_or_update_mcp_connection() -> str | None:
-    """Create or update the project connection pointing to the KB's MCP endpoint."""
     details = _build_connection_details()
     if not details:
         return None

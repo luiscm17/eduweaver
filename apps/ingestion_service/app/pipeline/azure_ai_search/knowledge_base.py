@@ -46,7 +46,7 @@ class KnowledgeBaseService:
             output_mode=KnowledgeRetrievalOutputMode.ANSWER_SYNTHESIS,
             retrieval_reasoning_effort=KnowledgeRetrievalLowReasoningEffort(),
             answer_instructions=KnowledgeBaseSettings.get_answer_instructions(),
-            retrieval_instructions=KnowledgeBaseSettings.get_retrieval_instructions()
+            retrieval_instructions=KnowledgeBaseSettings.get_retrieval_instructions(),
         )
         client = self._index_service.get_client()
         client.create_or_update_knowledge_base(kb)

@@ -4,9 +4,9 @@ from app.config.settings import (
     KnowledgeBaseSettings,
     KnowledgeSourceSettings,
 )
-from app.pipeline.knowledge_base import KnowledgeBaseService
-from app.pipeline.knowledge_source import KnowledgeSourceService
-from app.pipeline.mcp_connection import create_or_update_mcp_connection
+from app.pipeline.azure_ai_search.knowledge_base import KnowledgeBaseService
+from app.pipeline.azure_ai_search.knowledge_source import KnowledgeSourceService
+from app.pipeline.azure_ai_search.mcp_connection import create_or_update_mcp_connection
 
 
 def run_pipeline(name: str, description: str) -> None:
