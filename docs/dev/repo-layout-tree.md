@@ -75,6 +75,11 @@ eduweaver/
 │     │  │  ├─ settings.py
 │     │  │  └─ credentials.py
 │     │  ├─ pipeline/
+│     │  │  ├─ azure_ai_search/
+│     │  │  │  ├─ knowledge_base.py
+│     │  │  │  ├─ knowledge_source.py
+│     │  │  │  └─ mcp_connection.py
+│     │  │  ├─ docling/
 │     │  │  ├─ normalize.py
 │     │  │  ├─ chunking.py
 │     │  │  └─ embeddings.py
