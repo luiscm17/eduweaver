@@ -1,25 +1,26 @@
+from io import BytesIO
+from typing import Iterator
 
-from azure.storage.blob import BlobServiceClient
-from app.config.settings import BlobStorageSettings
+from azure.storage.blob import BlobClient
+
+from app.config.credentials import (
+    download_blob_stream,
+    get_blob_client,
+    list_blob_names,
+)
+
 
 class BlobStorageAdapter:
-    def __init__(self) -> None:
-        BlobStorageSettings.get_connection_string()
-        BlobStorageSettings.get_container_name()
+    """Adapter that exposes Azure Blob operations required by ingestion pipelines."""
 
-        conn_str = BlobStorageSettings.get_connection_string()
-        assert conn_str is not None
-        self.blob_service_client = BlobServiceClient.from_connection_string(conn_str)
+    def list_blobs(self) -> Iterator[str]:
+        """Yield every blob name that resides in the configured container."""
+        yield from list_blob_names()
 
-    def upload_blob(self, blob_name: str, data: bytes) -> None:
-        container_name = BlobStorageSettings.get_container_name()
-        assert container_name is not None
-        blob_client = self.blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        blob_client.upload_blob(data, overwrite=True)
-    
-    def download_blob(self, blob_name: str) -> bytes:
-        container_name = BlobStorageSettings.get_container_name()
-        assert container_name is not None
-        blob_client = self.blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        downloader = blob_client.download_blob()
-        return downloader.readall()
+    def open_stream(self, blob_name: str) -> BytesIO:
+        """Return a binary stream of the requested blob."""
+        return download_blob_stream(blob_name)
+
+    def get_blob_reference(self, blob_name: str) -> BlobClient:
+        """Return a BlobClient reference to perform advanced operations."""
+        return get_blob_client(blob_name)
