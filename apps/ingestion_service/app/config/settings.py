@@ -21,6 +21,15 @@ class EnvSettings(BaseSettings):
     AI_SEARCH_KEY: Optional[str] = None
     AI_SEARCH_INDEX_NAME: Optional[str] = None
 
+    AZURE_SEARCH_SKILLSET_NAME: Optional[str] = None
+    AZURE_SEARCH_SKILLSET_DESCRIPTION: Optional[str] = None
+    AZURE_DOCUMENT_CHUNK_MAX_LENGTH: Optional[int] = None
+    AZURE_DOCUMENT_CHUNK_OVERLAP_LENGTH: Optional[int] = None
+
+    AZURE_DOC_INTEL_ENDPOINT: Optional[str] = None
+    AZURE_DOC_INTEL_KEY: Optional[str] = None
+    AZURE_DOC_INTEL_LAYOUT_MODEL_ID: Optional[str] = None
+
     AI_PROJECT_RESOURCE_ID: Optional[str] = None
     AI_PROJECT_CONNECTION_NAME: Optional[str] = "rag-mcp-connection"
 
@@ -100,6 +109,60 @@ class AIModelSettings:
         if not embedding_model_name:
             raise ValueError("EMBEDDING_MODEL_NAME is not configured")
         return embedding_model_name
+
+
+class DocumentIntelligenceSettings:
+    """Shared configuration for Document Intelligence integrations."""
+
+    _DOC_INTEL_ENDPOINT: Optional[str] = env.AZURE_DOC_INTEL_ENDPOINT
+    _DOC_INTEL_KEY: Optional[str] = env.AZURE_DOC_INTEL_KEY
+    _DOC_INTEL_LAYOUT_MODEL_ID: Optional[str] = env.AZURE_DOC_INTEL_LAYOUT_MODEL_ID
+
+    @classmethod
+    def get_endpoint(cls) -> str:
+        endpoint = cls._DOC_INTEL_ENDPOINT
+        if not endpoint:
+            raise ValueError("AZURE_DOC_INTEL_ENDPOINT is not configured")
+        return endpoint
+
+    @classmethod
+    def get_key(cls) -> str:
+        key = cls._DOC_INTEL_KEY
+        if not key:
+            raise ValueError("AZURE_DOC_INTEL_KEY is not configured")
+        return key
+
+    @classmethod
+    def get_layout_model_id(cls) -> str:
+        return cls._DOC_INTEL_LAYOUT_MODEL_ID or "prebuilt-layout"
+
+
+class SkillsetSettings:
+    """Configuration helpers for the Azure Search skillset."""
+
+    _SKILLSET_NAME: Optional[str] = env.AZURE_SEARCH_SKILLSET_NAME
+    _SKILLSET_DESCRIPTION: Optional[str] = env.AZURE_SEARCH_SKILLSET_DESCRIPTION
+    _CHUNK_MAX: Optional[int] = env.AZURE_DOCUMENT_CHUNK_MAX_LENGTH
+    _CHUNK_OVERLAP: Optional[int] = env.AZURE_DOCUMENT_CHUNK_OVERLAP_LENGTH
+
+    @classmethod
+    def get_name(cls) -> str:
+        return cls._SKILLSET_NAME or "eduweaver-document-layout-skillset"
+
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            cls._SKILLSET_DESCRIPTION
+            or "Document Intelligence + embeddings para EduWeaver."
+        )
+
+    @classmethod
+    def get_chunk_max_length(cls) -> int:
+        return cls._CHUNK_MAX or 2000
+
+    @classmethod
+    def get_chunk_overlap_length(cls) -> int:
+        return cls._CHUNK_OVERLAP or 200
 
 
 class AISearchSettings:
