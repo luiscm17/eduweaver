@@ -1,7 +1,7 @@
 """Service to configure and provide Azure SearchIndexClient and index name."""
 
 from azure.identity import DefaultAzureCredential
-from azure.search.documents.indexes import SearchIndexClient
+from azure.search.documents.indexes import SearchIndexClient, SearchIndexerClient
 
 from apps.ingestion_service.app.config.settings import AISearchSettings
 
@@ -45,3 +45,17 @@ class SearchIndexService:
             str: The name of the search index.
         """
         return self._index_name
+
+
+class SearchIndexerService:
+    """Wrapper for Azure SearchIndexerClient setup using configured search endpoint."""
+
+    def __init__(self) -> None:
+        ai_search_endpoint = AISearchSettings.get_endpoint()
+        self._client_indexer = SearchIndexerClient(
+            endpoint=ai_search_endpoint,
+            credential=DefaultAzureCredential(),
+        )
+
+    def get_client(self) -> SearchIndexerClient:
+        return self._client_indexer
