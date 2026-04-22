@@ -44,7 +44,7 @@ Once completed, the system must support **manual retrieval queries** against the
 Included in this milestone:
 
 - PDF ingestion
-- parsing using Docling or Azure Document Intelligence
+- parsing using Docling (leveraging layout-aware Document trees and metadata) or Azure Document Intelligence
 - normalization to Document Schema
 - semantic chunking
 - embedding generation
@@ -115,7 +115,7 @@ Goal: extract structured data from the PDF.
 
 Possible implementations:
 
-- Docling parser
+- Docling parser (leveraging the Docling Document tree, furniture/groups, and layout metadata for enrichment)
 - Azure Document Intelligence
 
 Expected output:
@@ -126,11 +126,44 @@ Expected output:
 - figures
 - tables
 
+### Parser File Layout
+
+Implement the Docling parser with the following modules inside `apps/ingestion_service/app/pipeline/docling/`:
+
+- `engine.py`: orchestrates the Docling pipeline, downloads blobs, and configures `PdfPipelineOptions` (Granite/VLM) so you can request layout metadata.
+- `parser.py`: walks the produced `DoclingDocument` (body/furniture/groups) and emits raw blocks with `type`, `content`, `page`, `bbox` and other metadata.
+- `normalizer.py`: (optional for later) cleans edge cases, but for the milestone the parser should already provide normalized text.
+- `section_builder.py`: groups consecutive blocks using Docling's hierarchy, assigning `section_id` and `level`.
+- `chunker.py`: stub that will later consume `ContentBlock` entries and produce 200–400 token chunks.
+- `run_local.py`: helper script that downloads the blob, runs the parser, and exports Markdown/JSON for inspection.
+
+### Parser Responsibilities
+
+- Use Docling's `DocumentStream` to feed the PDF (Blob download done in `engine.extract`).
+- Preserve layout metadata (bounding boxes, fonts, page numbers) by copying `item.metadata` into the output before mapping to domain models.
+- Map Docling `groups` → sections and `items` (code/formula/table) → typed blocks, storing `metadata` for later chunking.
+- Emit outputs that can be directly fed into `app/domain/document.py`, `section.py`, and `content_block.py`.
+
+### Starter snippet
+
+```python
+from apps.ingestion_service.app.pipeline.docling.engine import DoclingEngine
+from apps.ingestion_service.app.pipeline.docling.parser import parse_docling_document
+
+engine = DoclingEngine(vlm_endpoint=..., vlm_model=..., vlm_api_key=...)
+doc, markdown = engine.extract('Artificial_Neural_Network_Model_for_Prediction_of_Drilling_Rate.pdf')
+blocks = parse_docling_document(doc)
+for block in blocks['items']:
+    print(block['type'], block['metadata'].get('page'), block['content'][:60])
+```
+
+This snippet demonstrates the flow: `engine` downloads the blob and returns a Docling document, while `parser` turns it into layout-aware blocks ready to populate the domain models.
+
 ---
 
 ## Task 3 — Normalization
 
-Goal: convert parsed data into the **Normalized Document Schema**.
+Goal: convert parsed data into the **Normalized Document Schema**. Docling already provides enriched blocks (with layout metadata, tables, formulas, groups, etc.), so the task is to map those nodes to Document/Section/ContentBlock while preserving the semantic structure exposed by Docling.
 
 Output objects:
 

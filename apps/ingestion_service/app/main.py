@@ -4,13 +4,24 @@ from apps.ingestion_service.app.config.settings import (
     KnowledgeBaseSettings,
     KnowledgeSourceSettings,
 )
-from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_base import KnowledgeBaseService
-from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_source import KnowledgeSourceService
-from apps.ingestion_service.app.pipeline.azure_ai_search.mcp_connection import create_or_update_mcp_connection
+from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_base import (
+    KnowledgeBaseService,
+)
+from apps.ingestion_service.app.pipeline.azure_ai_search.knowledge_source import (
+    KnowledgeSourceService,
+)
+from apps.ingestion_service.app.pipeline.azure_ai_search.mcp_connection import (
+    create_or_update_mcp_connection,
+)
+from apps.ingestion_service.app.pipeline.azure_ai_search.skillset import SkillsetService
 
 
 def run_pipeline(name: str, description: str) -> None:
     """Build and ingest a knowledge source and its knowledge base."""
+    skillset_service = SkillsetService()
+    skillset_name = skillset_service.create_or_update_skillset()
+    print(f"Skillset '{skillset_name}' created or updated.")
+
     ks_service = KnowledgeSourceService()
     ks = ks_service.create_knowledge_source(name, description)
     ks_service.ingest(ks)
